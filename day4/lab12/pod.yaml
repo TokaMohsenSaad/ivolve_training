@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql-pod
+  labels:
+    app: mysql
+spec:
+  containers:
+  - name: mysql-container
+    image: mysql:8.0
+    ports:
+    - containerPort: 3306
+    
+    # 1. Injecting variables from ConfigMap and Secret
+    env:
+      # Non-sensitive data from ConfigMap
+      - name: MYSQL_HOST
+        valueFrom:
+          configMapKeyRef:
+            name: mysql-config
+            key: DB_HOST
+      - name: MYSQL_USER
+        valueFrom:
+          configMapKeyRef:
+            name: mysql-config
+            key: DB_USER
+            
+      # Sensitive data from Secret
+      - name: MYSQL_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: mysql-passwords
+            key: DB_PASSWORD
+      - name: MYSQL_ROOT_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: mysql-passwords
+            key: MYSQL_ROOT_PASSWORD
